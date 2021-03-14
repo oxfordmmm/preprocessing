@@ -1,0 +1,40 @@
+Bootstrap: docker
+From: debian:buster
+
+%labels
+maintainer="pricea35@cardiff.ac.uk"
+
+%post
+mykrobe_version=0.8.1
+
+apt-get update \
+&& apt-get install -y wget rsync git build-essential r-base-core zlib1g-dev libncurses5-dev libz-dev liblzma-dev libbz2-dev python3.7 python3.7-dev python3-pip \
+&& git clone --recursive -b geno_kmer_count https://github.com/phelimb/mccortex \
+&& make -C mccortex \
+&& mv mccortex /usr/local/bin \
+&& wget -O mykrobe-${mykrobe_version}.tar.gz https://github.com/Mykrobe-tools/mykrobe/archive/v${mykrobe_version}.tar.gz \
+&& tar -xzf mykrobe-${mykrobe_version}.tar.gz \
+&& cd mykrobe-${mykrobe_version} \
+&& pip3 install -r requirements.txt \
+&& pip3 install . \
+&& ln -s /usr/local/bin/mccortex/bin/mccortex31 /usr/local/lib/python3.7/dist-packages/mykrobe/cortex/mccortex31 \
+&& wget -O /usr/local/bin/json_to_tsv.py https://raw.githubusercontent.com/iqbal-lab/Mykrobe-predictor/master/scripts/json_to_tsv.py \
+&& chmod +x /usr/local/bin/json_to_tsv.py \
+&& wget -O mykrobe-data.tar.gz http://s3.climb.ac.uk/mykrobe/mykrobe-data.tgz \
+&& tar -zxf mykrobe-data.tar.gz \
+&& mv mykrobe-data data \
+&& cd data \
+&& rsync -a * /usr/local/lib/python3.7/dist-packages/mykrobe/data/
+
+
+PATH=${PATH}:/usr/local/bin/mccortex/bin
+
+%environment
+export pengu_software_version_mykrobe=0.8.1
+export PATH=${PATH}:/usr/local/bin/mccortex/bin
+
+%runscript
+exec /bin/bash "$@"
+
+%startscript
+exec /bin/bash "$@"(base)
