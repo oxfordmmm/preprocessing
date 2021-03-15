@@ -154,13 +154,13 @@ process preprocessing_fastp {
 	
     """
     fastp -i $fq1 -I $fq2 -o ${clean_fq1} -O ${clean_fq2} -j ${fastp_json} -h ${fastp_html} --length_required 50 --average_qual 10 --low_complexity_filter --correction --cut_right --cut_tail --cut_tail_window_size 1 --cut_tail_mean_quality 20
-
+    
     rm -rf ${fastp_html}
 
     num_reads=\$(jq '.summary.after_filtering.total_reads' ${fastp_json} | awk '{sum+=\$0} END{print sum}')
 
     if (( \$num_reads > 100000 )); then printf "" >> ${error_log} && printf "pass"; else echo "error: after fastp, sample did not have > 100k reads (it only contained \$num_reads)" >> ${error_log} && printf "fail"; fi
-	"""
+    """
 }
 
 process preprocessing_fastQC {
@@ -199,12 +199,12 @@ process preprocessing_kraken2 {
     publishDir "${params.output_dir}/$sample_name", mode: 'copy', pattern: '*.log'
     
     container "${params.sif_dir}/ppKraken2.sif"
+   
+    cpus 8
  
     when:
     enough_reads == 'pass'
 
-    cpus 12
-    
     input:
     tuple val(sample_name), path(fq1), path(fq2), val(enough_reads)
 		
@@ -250,7 +250,7 @@ process preprocessing_mykrobe {
 
     container "${params.sif_dir}/ppMykrobe.sif"
 
-    cpus 12
+    cpus 8
 
     when:
     run_mykrobe == 'yes'
@@ -281,7 +281,7 @@ process preprocessing_bowtie2 {
 
     container "${params.sif_dir}/ppBowtie2.sif"
 
-    cpus 12
+    cpus 8
 
     when:
     enough_myco_reads == 'yes'
@@ -404,7 +404,7 @@ process preprocessing_mapToContamFa {
 
     container "${params.sif_dir}/ppBwa.sif"
 
-    cpus 12
+    cpus 8
 	
     when:
     does_fa_pass == 'pass'
@@ -444,7 +444,7 @@ process preprocessing_reKraken {
 
     container "${params.sif_dir}/ppKraken2.sif"
 
-    cpus 12
+    cpus 8
     
     input:
     tuple val(sample_name), path(fq1), path(fq2)
@@ -476,7 +476,7 @@ process preprocessing_reMykrobe {
 	
     container "${params.sif_dir}/ppMykrobe.sif"
 
-    cpus 12
+    cpus 8
 	
     input:
     tuple val(sample_name), path(fq1), path(fq2)
