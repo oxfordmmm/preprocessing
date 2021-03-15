@@ -3,12 +3,16 @@ From: debian:buster
 
 %labels
 maintainer="pricea35@cardiff.ac.uk"
+about.summary="mykrobe container"
 
 %post
-mykrobe_version=0.8.1
+mykrobe_version=0.9.0
+
+PACKAGES="wget rsync git build-essential r-base-core zlib1g-dev libncurses5-dev libz-dev liblzma-dev libbz2-dev"
+PYTHON="python3.7 python3.7-dev python3-pip"
 
 apt-get update \
-&& apt-get install -y wget rsync git build-essential r-base-core zlib1g-dev libncurses5-dev libz-dev liblzma-dev libbz2-dev python3.7 python3.7-dev python3-pip \
+&& apt-get install -y $PACKAGES $PYTHON \
 && git clone --recursive -b geno_kmer_count https://github.com/phelimb/mccortex \
 && make -C mccortex \
 && mv mccortex /usr/local/bin \
@@ -20,17 +24,15 @@ apt-get update \
 && ln -s /usr/local/bin/mccortex/bin/mccortex31 /usr/local/lib/python3.7/dist-packages/mykrobe/cortex/mccortex31 \
 && wget -O /usr/local/bin/json_to_tsv.py https://raw.githubusercontent.com/iqbal-lab/Mykrobe-predictor/master/scripts/json_to_tsv.py \
 && chmod +x /usr/local/bin/json_to_tsv.py \
-&& wget -O mykrobe-data.tar.gz http://s3.climb.ac.uk/mykrobe/mykrobe-data.tgz \
-&& tar -zxf mykrobe-data.tar.gz \
-&& mv mykrobe-data data \
-&& cd data \
-&& rsync -a * /usr/local/lib/python3.7/dist-packages/mykrobe/data/
-
+&& mykrobe panels update_metadata \
+&& mykrobe panels update_species all
 
 PATH=${PATH}:/usr/local/bin/mccortex/bin
 
 %environment
-export pengu_software_version_mykrobe=0.8.1
+export mykrobe_version=0.9.0
+export PACKAGES="wget rsync git build-essential r-base-core zlib1g-dev libncurses5-dev libz-dev liblzma-dev libbz2-dev"
+export PYTHON="python3.7 python3.7-dev python3-pip"
 export PATH=${PATH}:/usr/local/bin/mccortex/bin
 
 %runscript
