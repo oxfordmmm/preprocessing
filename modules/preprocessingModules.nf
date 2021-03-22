@@ -9,8 +9,6 @@ process preprocessing_checkBamValidity {
   
     publishDir "${params.output_dir}/${bam_file.getBaseName()}", mode: 'copy', pattern: '*.log'
 
-    container "${params.sif_dir}/ppBedtools.sif"
-
     input:
     path(bam_file)
    
@@ -36,8 +34,6 @@ process preprocessing_checkFqValidity {
     tag { sample_name }
 
     publishDir "${params.output_dir}/$sample_name", mode: 'copy', pattern: '*.log'
-
-    container "${params.sif_dir}/ppFqtools.sif"
 
     input:
     tuple val(sample_name), path(fq1), path(fq2)
@@ -65,8 +61,6 @@ process preprocessing_bam2fastq {
 
     tag { bam_file.getBaseName() }
     
-    container "${params.sif_dir}/ppBedtools.sif"
-
     when:
     is_ok == 'OK'    
 
@@ -100,8 +94,6 @@ process preprocessing_countReads {
 
     publishDir "${params.output_dir}/$sample_name", mode: 'copy', pattern: '*.log'
 
-    container "${params.sif_dir}/ppFqtools.sif"
-
     when:
     is_ok == 'OK'
   
@@ -131,8 +123,6 @@ process preprocessing_fastp {
     publishDir "${params.output_dir}/$sample_name/raw_read_QC_reports", mode: 'copy', pattern: '*.json'
     publishDir "${params.output_dir}/$sample_name/output_reads", mode: 'copy', pattern: '*.fq.gz' // may be overwritten if unmixing needed
     publishDir "${params.output_dir}/$sample_name", mode: 'copy', pattern: '*.log'
-
-    container "${params.sif_dir}/ppFastp.sif"
 
     when:
     run_fastp == 'pass'
@@ -172,8 +162,6 @@ process preprocessing_fastQC {
 
     publishDir "${params.output_dir}/$sample_name/raw_read_QC_reports", mode: 'copy'
 
-    container "${params.sif_dir}/ppFastqc.sif"
-
     input:
     tuple val(sample_name), path(fq1), path(fq2), val(enough_reads)
 	
@@ -197,9 +185,7 @@ process preprocessing_kraken2 {
 
     publishDir "${params.output_dir}/$sample_name/speciation_reports_cleanedReads", mode: 'copy', pattern: '*_kraken_report.*'
     publishDir "${params.output_dir}/$sample_name", mode: 'copy', pattern: '*.log'
-    
-    container "${params.sif_dir}/ppKraken2.sif"
-   
+       
     cpus 8
  
     when:
@@ -248,8 +234,6 @@ process preprocessing_mykrobe {
 
     publishDir "${params.output_dir}/$sample_name/speciation_reports_cleanedReads", mode: 'copy', pattern: '*_mykrobe_report.json'
 
-    container "${params.sif_dir}/ppMykrobe.sif"
-
     cpus 8
 
     when:
@@ -278,8 +262,6 @@ process preprocessing_bowtie2 {
     tag { sample_name }
 
     publishDir "${params.output_dir}/$sample_name/output_reads", mode: 'copy', pattern: '*.fq.gz', overwrite: 'true'
-
-    container "${params.sif_dir}/ppBowtie2.sif"
 
     cpus 8
 
@@ -318,8 +300,6 @@ process preprocessing_identifyBacterialContaminants {
 
     publishDir "${params.output_dir}/$sample_name/speciation_reports_cleanedReads", mode: 'copy', pattern: '*.json'
     publishDir "${params.output_dir}/$sample_name", mode: 'copy', pattern: '*.log' 
-
-    container "${params.sif_dir}/ppPerljson.sif"
 
     when:
     enough_myco_reads == 'yes'
@@ -402,8 +382,6 @@ process preprocessing_mapToContamFa {
 
     publishDir "${params.output_dir}/$sample_name/output_reads", mode: 'copy', pattern: '*.fq.gz', overwrite: 'true'
 
-    container "${params.sif_dir}/ppBwa.sif"
-
     cpus 8
 	
     when:
@@ -442,8 +420,6 @@ process preprocessing_reKraken {
 
     publishDir "${params.output_dir}/$sample_name/speciation_reports_cleanedAndUnmixedReads", mode: 'copy', pattern: '*_kraken_report.*'
 
-    container "${params.sif_dir}/ppKraken2.sif"
-
     cpus 8
     
     input:
@@ -474,10 +450,8 @@ process preprocessing_reMykrobe {
 
     publishDir "${params.output_dir}/$sample_name/speciation_reports_cleanedAndUnmixedReads", mode: 'copy', pattern: '*_mykrobe_report.json'
 	
-    container "${params.sif_dir}/ppMykrobe.sif"
-
     cpus 8
-	
+
     input:
     tuple val(sample_name), path(fq1), path(fq2)
 		
@@ -501,8 +475,6 @@ process preprocessing_summarise {
 
     publishDir "${params.output_dir}/$sample_name/speciation_reports_cleanedAndUnmixedReads", mode: 'copy', pattern: '*.json'
     publishDir "${params.output_dir}/$sample_name", mode: 'copy', pattern: '*.log'
-
-    container "${params.sif_dir}/ppPerljson.sif"
 
     input:
     tuple val(sample_name), path(mykrobe_json)
