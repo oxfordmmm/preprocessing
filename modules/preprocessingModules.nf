@@ -193,6 +193,7 @@ process preprocessing_kraken2 {
 
     input:
     tuple val(sample_name), path(fq1), path(fq2), val(enough_reads)
+    path(database)
 		
     output:
     tuple path("${sample_name}_kraken_report.txt"), path("${sample_name}_kraken_report.json"), emit: kraken2_report
@@ -208,7 +209,7 @@ process preprocessing_kraken2 {
     error_log = "${sample_name}.log"
 	
     """
-    kraken2 --threads ${task.cpus} --db ${params.kraken_db} --output ${kraken2_read_classification} --report ${kraken2_report} --paired $fq1 $fq2
+    kraken2 --threads ${task.cpus} --db . --output ${kraken2_read_classification} --report ${kraken2_report} --paired $fq1 $fq2
 
     perl ${baseDir}/bin/parse_kraken_report2.pl ${kraken2_report} ${kraken2_json} 0.5 5000
 
@@ -270,6 +271,7 @@ process preprocessing_bowtie2 {
 
     input:
     tuple val(sample_name), path(fq1), path(fq2), val(enough_myco_reads)
+    path(index)
 
     output:
     tuple val(sample_name), path("${sample_name}_cleaned_1.fq.gz"), path("${sample_name}_cleaned_2.fq.gz"), emit: bowtie2_fqs
@@ -280,7 +282,7 @@ process preprocessing_bowtie2 {
     humanfree_fq2 = "${sample_name}_cleaned_2.fq"
 	
     """
-    bowtie2 --very-sensitive -p ${task.cpus} -x ${params.bowtie2_index} -1 $fq1 -2 $fq2 | samtools view -f 4 -Shb - > ${bam}
+    bowtie2 --very-sensitive -p ${task.cpus} -x ${index}/${params.bowtie_index_name} -1 $fq1 -2 $fq2 | samtools view -f 4 -Shb - > ${bam}
     samtools fastq -1 ${humanfree_fq1} -2 ${humanfree_fq2} -s singleton.fq ${bam}
 
     rm -rf ${bam}
@@ -424,6 +426,7 @@ process preprocessing_reKraken {
     
     input:
     tuple val(sample_name), path(fq1), path(fq2)
+    path(database)
 		
     output:
     tuple path("${sample_name}_kraken_report.txt"), path("${sample_name}_kraken_report.json"), emit: reKraken_report
@@ -434,7 +437,7 @@ process preprocessing_reKraken {
     kraken2_read_classification = "${sample_name}_read_classifications.txt"
     
     """
-    kraken2 --threads ${task.cpus} --db ${params.kraken_db} --output ${kraken2_read_classification} --report ${kraken2_report} --paired $fq1 $fq2
+    kraken2 --threads ${task.cpus} --db . --output ${kraken2_read_classification} --report ${kraken2_report} --paired $fq1 $fq2
 
     perl ${baseDir}/bin/parse_kraken_report2.pl ${kraken2_report} ${kraken2_json} 0.5 5000
     rm -rf ${sample_name}_read_classifications.txt

@@ -23,6 +23,8 @@ workflow preprocessing {
 
     take:
       input_files
+      krakenDB
+      bowtie_dir
 
     main:
 
@@ -46,11 +48,11 @@ workflow preprocessing {
 
       preprocessing_fastQC(preprocessing_fastp.out.fastp_fqs)
 
-      preprocessing_kraken2(preprocessing_fastp.out.fastp_fqs)
+      preprocessing_kraken2(preprocessing_fastp.out.fastp_fqs, krakenDB.toList())
 
       preprocessing_mykrobe(preprocessing_kraken2.out.kraken2_fqs)
 
-      preprocessing_bowtie2(preprocessing_kraken2.out.kraken2_fqs)
+      preprocessing_bowtie2(preprocessing_kraken2.out.kraken2_fqs, bowtie_dir)
 
       preprocessing_identifyBacterialContaminants(preprocessing_mykrobe.out.mykrobe_report, preprocessing_kraken2.out.kraken2_report)
 
@@ -58,7 +60,7 @@ workflow preprocessing {
 
       preprocessing_mapToContamFa(preprocessing_bowtie2.out.bowtie2_fqs, preprocessing_downloadContamGenomes.out.contam_fa)
 
-      preprocessing_reKraken(preprocessing_mapToContamFa.out.reClassification_fqs)
+      preprocessing_reKraken(preprocessing_mapToContamFa.out.reClassification_fqs, krakenDB.toList())
 
       preprocessing_reMykrobe(preprocessing_mapToContamFa.out.reClassification_fqs)
 
