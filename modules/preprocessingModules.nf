@@ -9,6 +9,8 @@ process preprocessing_checkBamValidity {
   
     publishDir "${params.output_dir}/${bam_file.getBaseName()}", mode: 'copy', pattern: '*.log'
 
+    memory '5 GB'
+
     input:
     path(bam_file)
    
@@ -35,6 +37,8 @@ process preprocessing_checkFqValidity {
 
     publishDir "${params.output_dir}/$sample_name", mode: 'copy', pattern: '*.log'
 
+    memory '5 GB'
+
     input:
     tuple val(sample_name), path(fq1), path(fq2)
 	
@@ -60,6 +64,8 @@ process preprocessing_bam2fastq {
     */
 
     tag { bam_file.getBaseName() }
+
+    memory '5 GB'
     
     when:
     is_ok == 'OK'    
@@ -94,6 +100,8 @@ process preprocessing_countReads {
 
     publishDir "${params.output_dir}/$sample_name", mode: 'copy', pattern: '*.log'
 
+    memory '5 GB'
+
     when:
     is_ok == 'OK'
   
@@ -123,6 +131,8 @@ process preprocessing_fastp {
     publishDir "${params.output_dir}/$sample_name/raw_read_QC_reports", mode: 'copy', pattern: '*.json'
     publishDir "${params.output_dir}/$sample_name/output_reads", mode: 'copy', pattern: '*.fq.gz' // may be overwritten if unmixing needed
     publishDir "${params.output_dir}/$sample_name", mode: 'copy', pattern: '*.log'
+
+    memory '5 GB'
 
     when:
     run_fastp == 'pass'
@@ -162,6 +172,8 @@ process preprocessing_fastQC {
 
     publishDir "${params.output_dir}/$sample_name/raw_read_QC_reports", mode: 'copy'
 
+    memory '5 GB'
+
     input:
     tuple val(sample_name), path(fq1), path(fq2), val(enough_reads)
 	
@@ -187,7 +199,9 @@ process preprocessing_kraken2 {
     publishDir "${params.output_dir}/$sample_name", mode: 'copy', pattern: '*.log'
        
     cpus 8
- 
+
+    memory '10 GB'
+
     when:
     enough_reads == 'pass'
 
@@ -237,6 +251,8 @@ process preprocessing_mykrobe {
 
     cpus 8
 
+    memory '5 GB'
+
     when:
     run_mykrobe == 'yes'
 	
@@ -265,6 +281,8 @@ process preprocessing_bowtie2 {
     publishDir "${params.output_dir}/$sample_name/output_reads", mode: 'copy', pattern: '*.fq.gz', overwrite: 'true'
 
     cpus 8
+
+    memory '5 GB'
 
     when:
     enough_myco_reads == 'yes'
@@ -385,7 +403,9 @@ process preprocessing_mapToContamFa {
     publishDir "${params.output_dir}/$sample_name/output_reads", mode: 'copy', pattern: '*.fq.gz', overwrite: 'true'
 
     cpus 8
-	
+
+    memory '10 GB'
+
     when:
     does_fa_pass == 'pass'
 
@@ -423,6 +443,8 @@ process preprocessing_reKraken {
     publishDir "${params.output_dir}/$sample_name/speciation_reports_cleanedAndUnmixedReads", mode: 'copy', pattern: '*_kraken_report.*'
 
     cpus 8
+
+    memory '10 GB'
     
     input:
     tuple val(sample_name), path(fq1), path(fq2)
@@ -454,6 +476,8 @@ process preprocessing_reMykrobe {
     publishDir "${params.output_dir}/$sample_name/speciation_reports_cleanedAndUnmixedReads", mode: 'copy', pattern: '*_mykrobe_report.json'
 	
     cpus 8
+
+    memory '5 GB'
 
     input:
     tuple val(sample_name), path(fq1), path(fq2)
