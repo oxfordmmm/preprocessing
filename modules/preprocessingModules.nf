@@ -355,8 +355,6 @@ process preprocessing_downloadContamGenomes {
     * @QCcheckpoint confirm that we could download every genome in the list of contaminants
     */
     
-    executor 'local'
-
     tag { sample_name }
 
     publishDir "${params.output_dir}/$sample_name", mode: 'copy', pattern: '*.log'
@@ -376,8 +374,8 @@ process preprocessing_downloadContamGenomes {
     error_log = "${sample_name}.log"
 	
     """
-    wget -i $contam_list --spider -nv -a linktestlog.txt 2>&1
-    cat linktestlog.txt | awk '/fna.gz\" \\[1\\]/{print \$4}' > confirmedurllist.txt
+    wget -i ${contam_list} --spider -nv -a linktestlog.txt 2>&1
+    cat linktestlog.txt | awk '/listing\" \\[1\\]/{print \$4}' > confirmedurllist.txt
     wget -i confirmedurllist.txt
 
     gunzip *.gz
