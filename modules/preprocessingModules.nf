@@ -55,6 +55,14 @@ process preprocessing_checkFqValidity {
     if [ \$is_ok == 'OK' ]; then printf "" >> ${error_log}; else echo "error: sample did not pass fqtools validation check" >> ${error_log}; fi
     printf \$is_ok
     """
+
+    stub:
+    error_log  = "${sample_name}.log"
+
+    """
+    printf ${params.checkFqValidity_isok}
+    touch ${error_log}
+    """
 }
 
 
@@ -119,6 +127,14 @@ process preprocessing_countReads {
 
     if (( \$num_reads > 100000 )); then printf "" >> ${error_log} && printf "pass"; else echo "error: sample did not have > 100k pairs of raw reads (it only contained \$num_reads)" >> ${error_log} && printf "fail"; fi
     """
+
+    stub:
+    error_log = "${sample_name}.log"
+
+    """
+    printf ${params.countReads_runfastp}
+    touch ${error_log}
+    """
 }
 	
 process preprocessing_fastp {
@@ -161,6 +177,22 @@ process preprocessing_fastp {
 
     if (( \$num_reads > 100000 )); then printf "" >> ${error_log} && printf "pass"; else echo "error: after fastp, sample did not have > 100k reads (it only contained \$num_reads)" >> ${error_log} && printf "fail"; fi
     """
+
+    stub:
+    clean_fq1  = "${sample_name}_cleaned_1.fq.gz"
+    clean_fq2  = "${sample_name}_cleaned_2.fq.gz"
+    fastp_json = "${sample_name}_fastp.json"
+    fastp_html = "${sample_name}_fastp.html"
+    error_log  = "${sample_name}.log"
+
+    """
+    printf ${params.countReads_enoughreads}
+    touch ${error_log}
+    touch ${clean_fq1}
+    touch ${clean_fq2}
+    touch ${fastp_json}
+    touch ${fastp_html}
+    """
 }
 
 process preprocessing_fastQC {
@@ -185,6 +217,12 @@ process preprocessing_fastQC {
     cat $fq1 $fq2 > ${sample_name}.fq.gz
     fastqc ${sample_name}.fq.gz
     rm ${sample_name}.fq.gz
+    """
+
+    stub:
+    """
+    touch ${sample_name}_fastqc.html
+    touch ${sample_name}_fastqc.zip
     """
 }
 
@@ -238,6 +276,24 @@ process preprocessing_kraken2 {
 
     if [ \$run_mykrobe == '\"true\"' ]; then printf "" >> ${error_log} && printf "yes"; else echo "error: Kraken's top family hit either wasn't Mycobacteriaceae, or represented < 5000 reads in absolute terms or < 0.5% of the total" >> ${error_log} && printf "no"; fi
     """
+
+    stub:
+    kraken2_report = "${sample_name}_kraken_report.txt"
+    kraken2_json = "${sample_name}_kraken_report.json"
+    kraken2_read_classification = "${sample_name}_read_classifications.txt"
+    nonBac_depleted_reads_1 = "${sample_name}_clean_exclNonBacteria_1.fq.gz"
+    nonBac_depleted_reads_2 = "${sample_name}_clean_exclNonBacteria_2.fq.gz"
+    error_log = "${sample_name}.log"
+
+    """
+    printf ${params.kraken2_runmykrobe}
+    touch ${kraken2_report}
+    touch ${kraken2_json}
+    touch ${kraken2_read_classification}
+    touch ${nonBac_depleted_reads_1}
+    touch ${nonBac_depleted_reads_2}
+    touch ${error_log}
+    """
 }
 
 process preprocessing_mykrobe {
@@ -267,6 +323,14 @@ process preprocessing_mykrobe {
 	
     """
     mykrobe predict ${sample_name} tb --threads ${task.cpus} --format json --output ${mykrobe_report} -1 $fq1 $fq2
+    printf 'yes'
+    """
+
+    stub:
+    mykrobe_report = "${sample_name}_mykrobe_report.json"
+
+    """
+    touch ${mykrobe_report}
     printf 'yes'
     """
 }
@@ -309,6 +373,15 @@ process preprocessing_bowtie2 {
     gzip -f ${humanfree_fq1}
     gzip -f ${humanfree_fq2}
     """	
+
+    stub:
+    humanfree_fq1 = "${sample_name}_cleaned_1.fq"
+    humanfree_fq2 = "${sample_name}_cleaned_2.fq"
+
+    """
+    touch ${humanfree_fq1}.gz
+    touch ${humanfree_fq2}.gz
+    """
 }
 
 process preprocessing_identifyBacterialContaminants {
@@ -347,6 +420,17 @@ process preprocessing_identifyBacterialContaminants {
     if (( \$num_urls > 0 )); then printf "" >> ${error_log} && printf "yes"; else echo "no contaminant genomes detected for ${sample_name} (note: if --unmix_myco is 'no', contaminating mycobacteria, if any, won't be counted here)" >> ${error_log} && printf "no"; fi
 
     if [ \$contam_to_remove == '\"no\"' ] && [ \$acceptable_species == '\"yes\"' ]; then echo "workflow complete without error" >> ${error_log}; else echo "top hit in ${sample_name} is not one of the 10 accepted mycobacteria" >> ${error_log}; fi
+    """
+
+    stub:
+    error_log = "${sample_name}.log"
+
+    """
+    touch ${sample_name}_species_in_sample.json
+    touch ${sample_name}_urllist.txt
+    touch ${error_log}
+
+    printf ${params.identifyBactContam_rundecontam}
     """
 }
 
@@ -389,6 +473,16 @@ process preprocessing_downloadContamGenomes {
 
     if (( \$num_urls_in == \$num_urls_out )); then printf "" >> ${error_log} && printf "pass"; else echo "error: there were \$num_urls_in contaminant genomes but only \$num_urls_out could be downloaded" >> ${error_log} && printf "fail"; fi
     """
+
+    stub:
+    contaminant_fa = "${sample_name}_contaminants.fa"
+    error_log = "${sample_name}.log"
+
+    """
+    printf ${params.downloadContamGenomes_fapass}
+    touch ${contaminant_fa}
+    touch ${error_log}
+    """
 }
 
 process preprocessing_mapToContamFa {
@@ -429,6 +523,15 @@ process preprocessing_mapToContamFa {
     gzip -f ${decontam_fq1}
     gzip -f ${decontam_fq2}
     """
+
+    stub:
+    decontam_fq1 = "${sample_name}_cleaned_1.fq"
+    decontam_fq2 = "${sample_name}_cleaned_2.fq"
+
+    """
+    touch ${decontam_fq1}.gz
+    touch ${decontam_fq2}.gz
+    """
 }
 
 process preprocessing_reKraken {
@@ -462,6 +565,17 @@ process preprocessing_reKraken {
     perl ${baseDir}/bin/parse_kraken_report2.pl ${kraken2_report} ${kraken2_json} 0.5 5000
     rm -rf ${sample_name}_read_classifications.txt
     """
+
+    stub:
+    kraken2_report = "${sample_name}_kraken_report.txt"
+    kraken2_json = "${sample_name}_kraken_report.json"
+    kraken2_read_classification = "${sample_name}_read_classifications.txt"
+
+    """
+    touch ${kraken2_report}
+    touch ${kraken2_json}
+    touch ${kraken2_read_classification}
+    """
 }
 
 process preprocessing_reMykrobe {
@@ -488,6 +602,13 @@ process preprocessing_reMykrobe {
 	
     """
     mykrobe predict ${sample_name} tb --threads ${task.cpus} --format json --output ${mykrobe_report} -1 $fq1 $fq2
+    """
+
+    stub:
+    mykrobe_report = "${sample_name}_mykrobe_report.json"
+
+    """
+    touch ${mykrobe_report}
     """
 }
 
@@ -521,6 +642,14 @@ process preprocessing_summarise {
     if [ \$contam_to_remove == '\"yes\"' ]; then echo "error: ${sample_name} remains contaminated, even after attempting to resolve this" >> ${error_log}; fi
 
     if [ \$contam_to_remove == '\"no\"' ] && [ \$acceptable_species == '\"yes\"' ]; then echo "workflow complete without error" >> ${error_log}; else echo "error: top hit in ${sample_name} is not one of the 10 accepted mycobacteria" >> ${error_log}; fi
+    """
+
+    stub:
+    error_log = "${sample_name}.log"
+
+    """
+    touch ${sample_name}_species_in_sample.json
+    touch ${error_log}
     """
 }
 
