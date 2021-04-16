@@ -6,11 +6,41 @@ Takes as input one directory containing pairs of fastq(.gz) or bam files.
 Produces as output one directory per sample, containing the relevant reports & a pair of cleaned fastqs.
 
 ## Quick Start ## 
-E.g. to run:
+The workflow is designed to run with either docker `-profile docker` or singularity `-profile singularity`. Before running the workflow using singularity, the singularity images for the workflow will need to be built by running `singularity/singularity_pull.sh` 
+
+E.g. to run the workflow:
 ```
-nextflow run main.nf -profile singularity --filetype fastq --input_dir fq_dir --pattern "*_R{1,2}.fastq.gz" --unmix_myco yes --output_dir .
-nextflow run main.nf -profile docker --filetype bam --input_dir bam_dir --unmix_myco yes --output_dir .
+nextflow run main.nf -profile singularity --filetype fastq --input_dir fq_dir --pattern "*_R{1,2}.fastq.gz" --unmix_myco yes \
+--output_dir . --kraken_db /path/to/database --bowtie2_index /path/to/index --bowtie_index_name hg19_1kgmaj
+
+nextflow run main.nf -profile docker --filetype bam --input_dir bam_dir --unmix_myco no \
+--output_dir . --kraken_db /path/to/database --bowtie2_index /path/to/index --bowtie_index_name hg19_1kgmaj
 ```
+
+## Params ##
+The following parameters should be set in `nextflow.config` or specified on the command line:
+
+* **input_dir**<br /> 
+Directory containing fastq OR bam files
+* **filetype**<br />
+File type in input_dir. Either "fastq" or "bam"
+* **pattern**<br />
+Regex to match fastq files in input_dir, e.g. "*_R{1,2}.fq.gz"
+* **output_dir**<br />
+Output directory
+* **unmix_myco**<br />
+Do you want to disambiguate mixed-mycobacterial samples by read alignment? Either "yes" or "no"
+* **species**<br />
+Principal species in each sample, assuming genus Mycobacterium. Default 'null'. If parameter used, takes 1 of 10 values: abscessus, africanum, avium, bovis, chelonae, chimaera, fortuitum, intracellulare, kansasii, tuberculosis
+* **kraken_db**<br />
+Directory containing `*.k2d` Kraken2 database files (obtain from https://benlangmead.github.io/aws-indexes/k2)
+* **bowtie2_index**<br />
+Directory containing Bowtie2 index (obtain from ftp://ftp.ccb.jhu.edu/pub/data/bowtie2_indexes/hg19_1kgmaj_bt2.zip). The specified path should NOT include the index name
+* **bowtie_index_name**<br />
+Name of the bowtie index, e.g. hg19_1kgmaj<br />
+<br />
+
+For more information on the parameters run `nextflow run main.nf --help`
 
 ## Checkpoints ##
 Checkpoints used throughout this workflow to fail a sample/issue warnings:
