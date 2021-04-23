@@ -1,6 +1,6 @@
 // modules for the preprocessing workflow
 
-process preprocessing_checkBamValidity {
+process checkBamValidity {
     /**
     * @QCcheckpoint confirm that samtools validates bam
     */
@@ -28,7 +28,7 @@ process preprocessing_checkBamValidity {
     """
 }
 
-process preprocessing_checkFqValidity {
+process checkFqValidity {
     /**
     * @QCcheckpoint confirm that fqtools validates both fastqs
     */
@@ -58,7 +58,7 @@ process preprocessing_checkFqValidity {
 }
 
 
-process preprocessing_bam2fastq {
+process bam2fastq {
     /**
     * @QCcheckpoint none
     */
@@ -91,7 +91,7 @@ process preprocessing_bam2fastq {
     """
 }
 
-process preprocessing_countReads {
+process countReads {
     /**
     * @QCcheckpoint fail sample if there are < 100k raw reads
     */
@@ -121,7 +121,7 @@ process preprocessing_countReads {
     """
 }
 	
-process preprocessing_fastp {
+process fastp {
     /**
     * @QCcheckpoint confirm that there > 100k reads after cleaning with fastp
     */
@@ -163,7 +163,7 @@ process preprocessing_fastp {
     """
 }
 
-process preprocessing_fastQC {
+process fastQC {
     /**
     * @QCcheckpoint none
     */
@@ -188,7 +188,7 @@ process preprocessing_fastQC {
     """
 }
 
-process preprocessing_kraken2 {
+process kraken2 {
     /**
     * @QCcheckpoint only pass to Mykrobe if Kraken's top family classification is Mycobacteriaceae
     */
@@ -240,7 +240,7 @@ process preprocessing_kraken2 {
     """
 }
 
-process preprocessing_mykrobe {
+process mykrobe {
     /**
     * @QCcheckpoint none
     */
@@ -271,7 +271,7 @@ process preprocessing_mykrobe {
     """
 }
 
-process preprocessing_bowtie2 {
+process bowtie2 {
     /**
     * @QCcheckpoint none
     */
@@ -311,7 +311,7 @@ process preprocessing_bowtie2 {
     """	
 }
 
-process preprocessing_identifyBacterialContaminants {
+process identifyBacterialContaminants {
     /**
     * @QCcheckpoint if urllist.txt is empty, there are no contaminant genomes to download, so skip next process
     */    
@@ -350,7 +350,7 @@ process preprocessing_identifyBacterialContaminants {
     """
 }
 
-process preprocessing_downloadContamGenomes {
+process downloadContamGenomes {
     /**
     * @QCcheckpoint confirm that we could download every genome in the list of contaminants
     */
@@ -391,7 +391,7 @@ process preprocessing_downloadContamGenomes {
     """
 }
 
-process preprocessing_mapToContamFa {
+process mapToContamFa {
     /**
     * @QCcheckpoint none
     */
@@ -431,7 +431,7 @@ process preprocessing_mapToContamFa {
     """
 }
 
-process preprocessing_reKraken {
+process reKraken {
     /**
     * @QCcheckpoint none
     */
@@ -464,7 +464,7 @@ process preprocessing_reKraken {
     """
 }
 
-process preprocessing_reMykrobe {
+process reMykrobe {
     /**
     * @QCcheckpoint none
     */
@@ -491,7 +491,7 @@ process preprocessing_reMykrobe {
     """
 }
 
-process preprocessing_summarise {
+process summarise {
     /**
     * @QCcheckpoint none
     */    
