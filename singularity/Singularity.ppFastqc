@@ -8,7 +8,7 @@ about.summary="FastQC container"
 %post
 fastqc_version=0.11.9
 
-PACKAGES="curl unzip libfindbin-libs-perl openjdk-11-jre-headless"
+PACKAGES="procps curl unzip libfindbin-libs-perl openjdk-11-jre-headless"
 
 apt-get update \
 && apt-get install -y $PACKAGES \

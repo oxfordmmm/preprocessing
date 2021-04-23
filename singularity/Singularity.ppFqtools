@@ -9,7 +9,7 @@ about.summary="fqtools container"
 fqtools_version=2.3
 htslib_version=1.11
 
-PACKAGES="curl build-essential libz-dev libbz2-dev liblzma-dev libcurl4-openssl-dev autoconf"
+PACKAGES="procps curl build-essential libz-dev libbz2-dev liblzma-dev libcurl4-openssl-dev autoconf"
 
 apt-get update \
 && apt-get install -y $PACKAGES \

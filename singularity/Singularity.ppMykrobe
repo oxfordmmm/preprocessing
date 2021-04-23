@@ -8,7 +8,7 @@ about.summary="mykrobe container"
 %post
 mykrobe_version=0.9.0
 
-PACKAGES="wget rsync git build-essential r-base-core zlib1g-dev libncurses5-dev libz-dev liblzma-dev libbz2-dev"
+PACKAGES="procps wget rsync git build-essential r-base-core zlib1g-dev libncurses5-dev libz-dev liblzma-dev libbz2-dev"
 PYTHON="python3.7 python3.7-dev python3-pip"
 
 apt-get update \

@@ -10,7 +10,7 @@ samtools_version=1.11
 htslib_version=1.11
 bowtie2_version=2.4.2
 
-PACKAGES="curl build-essential zlib1g-dev libncurses-dev libbz2-dev liblzma-dev libcurl4-openssl-dev libfindbin-libs-perl unzip libtbb-dev"
+PACKAGES="procps curl build-essential zlib1g-dev libncurses-dev libbz2-dev liblzma-dev libcurl4-openssl-dev libfindbin-libs-perl unzip libtbb-dev"
 
 apt-get update \
 && apt-get install -y $PACKAGES \

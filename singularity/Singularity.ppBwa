@@ -10,7 +10,7 @@ bwa_version=0.7.17
 samtools_version=1.11
 htslib_version=1.11
 
-PACKAGES="curl build-essential zlib1g-dev libncurses-dev libbz2-dev liblzma-dev libcurl4-openssl-dev libfindbin-libs-perl"
+PACKAGES="procps curl build-essential zlib1g-dev libncurses-dev libbz2-dev liblzma-dev libcurl4-openssl-dev libfindbin-libs-perl"
 
 apt-get update \
 && apt-get install -y $PACKAGES \

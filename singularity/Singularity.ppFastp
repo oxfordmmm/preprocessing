@@ -8,7 +8,7 @@ about.summary="fastp container"
 %post
 fastp_version=0.20.1
 
-PACKAGES="curl build-essential zlib1g-dev jq"
+PACKAGES="procps curl build-essential zlib1g-dev jq"
 
 apt-get update \
 && apt-get install -y $PACKAGES \
