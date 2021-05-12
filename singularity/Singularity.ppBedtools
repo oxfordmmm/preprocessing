@@ -10,7 +10,7 @@ samtools_version=1.11
 htslib_version=1.11
 bedtools_version=2.29.2
 
-PACKAGES="procs curl build-essential zlib1g-dev libncurses-dev libbz2-dev liblzma-dev libcurl4-openssl-dev libfindbin-libs-perl"
+PACKAGES="procps curl build-essential zlib1g-dev libncurses-dev libbz2-dev liblzma-dev libcurl4-openssl-dev libfindbin-libs-perl"
 PYTHON="python3 python3-pip python3-dev"
 
 
