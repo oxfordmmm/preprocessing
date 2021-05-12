@@ -5,7 +5,7 @@ about.summary="FastQC container"
 
 ENV fastqc_version=0.11.9
 
-ENV PACKAGES="curl unzip libfindbin-libs-perl openjdk-11-jre-headless"
+ENV PACKAGES="procps curl unzip libfindbin-libs-perl openjdk-11-jre-headless"
 
 ENV PATH=${PATH}:/usr/local/bin/FastQC
 

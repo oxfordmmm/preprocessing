@@ -5,7 +5,7 @@ software="kraken2"
 
 ENV kraken2_version=2.1.1
 
-ENV PACKAGES="curl build-essential rsync unzip ncbi-blast+ perl libjson-perl cpanminus pigz jq" \
+ENV PACKAGES="procps curl build-essential rsync unzip ncbi-blast+ perl libjson-perl cpanminus pigz jq" \
 PYTHON="python3 python3-pip" \
 PYTHON_PACKAGES="biopython"
 

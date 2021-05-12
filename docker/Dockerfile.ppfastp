@@ -5,7 +5,7 @@ about.summary="fastp container"
 
 ENV fastp_version=0.20.1
 
-ENV PACKAGES="curl build-essential zlib1g-dev jq"
+ENV PACKAGES="procps curl build-essential zlib1g-dev jq"
 
 RUN apt-get update \
 && apt-get install -y $PACKAGES \

@@ -7,7 +7,7 @@ ENV samtools_version=1.11 \
 htslib_version=1.11 \
 bowtie2_version=2.4.2
 
-ENV PACKAGES="curl build-essential zlib1g-dev libncurses-dev libbz2-dev liblzma-dev libcurl4-openssl-dev libfindbin-libs-perl unzip libtbb-dev"
+ENV PACKAGES="procps curl build-essential zlib1g-dev libncurses-dev libbz2-dev liblzma-dev libcurl4-openssl-dev libfindbin-libs-perl unzip libtbb-dev"
 
 RUN apt-get update \
 && apt-get install -y $PACKAGES \

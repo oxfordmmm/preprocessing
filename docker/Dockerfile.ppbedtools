@@ -7,7 +7,7 @@ ENV samtools_version=1.11 \
 htslib_version=1.11 \
 bedtools_version=2.29.2
 
-ENV PACKAGES="curl build-essential zlib1g-dev libncurses-dev libbz2-dev liblzma-dev libcurl4-openssl-dev libfindbin-libs-perl" \
+ENV PACKAGES="procps curl build-essential zlib1g-dev libncurses-dev libbz2-dev liblzma-dev libcurl4-openssl-dev libfindbin-libs-perl" \
 PYTHON="python3 python3-pip python3-dev"
 
 ENV PATH=${PATH}:/usr/local/bin/bedtools2/bin

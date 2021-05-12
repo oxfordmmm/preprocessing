@@ -6,7 +6,7 @@ about.summary="fqtools container"
 ENV fqtools_version=2.3 \
 htslib_version=1.11
 
-ENV PACKAGES="curl build-essential libz-dev libbz2-dev liblzma-dev libcurl4-openssl-dev autoconf"
+ENV PACKAGES="procps curl build-essential libz-dev libbz2-dev liblzma-dev libcurl4-openssl-dev autoconf"
 
 ENV PATH=${PATH}:/usr/local/bin/fqtools-${fqtools_version}/bin
 ENV LD_LIBRARY_PATH=/usr/local/lib
